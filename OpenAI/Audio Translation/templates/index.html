@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Translation App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Audio Translation App</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file">Select Audio File:</label>
+                <input type="file" id="file" name="file" accept="audio/*" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="language">Target Language:</label>
+                <select id="language" name="language" required>
+                    <option value="">Select a language or choose "Other"</option>
+                    <option value="Afrikaans">Afrikaans</option>
+                    <option value="Albanian">Albanian</option>
+                    <option value="Amharic">Amharic</option>
+                    <option value="Arabic">Arabic</option>
+                    <option value="Armenian">Armenian</option>
+                    <option value="Azerbaijani">Azerbaijani</option>
+                    <option value="Basque">Basque</option>
+                    <option value="Belarusian">Belarusian</option>
+                    <option value="Bengali">Bengali</option>
+                    <option value="Bosnian">Bosnian</option>
+                    <option value="Bulgarian">Bulgarian</option>
+                    <option value="Catalan">Catalan</option>
+                    <option value="Cebuano">Cebuano</option>
+                    <option value="Chichewa">Chichewa</option>
+                    <option value="Chinese (Simplified)">Chinese (Simplified)</option>
+                    <option value="Chinese (Traditional)">Chinese (Traditional)</option>
+                    <option value="Corsican">Corsican</option>
+                    <option value="Croatian">Croatian</option>
+                    <option value="Czech">Czech</option>
+                    <option value="Danish">Danish</option>
+                    <option value="Dutch">Dutch</option>
+                    <option value="English">English</option>
+                    <option value="Esperanto">Esperanto</option>
+                    <option value="Estonian">Estonian</option>
+                    <option value="Filipino">Filipino</option>
+                    <option value="Finnish">Finnish</option>
+                    <option value="French">French</option>
+                    <option value="Frisian">Frisian</option>
+                    <option value="Galician">Galician</option>
+                    <option value="Georgian">Georgian</option>
+                    <option value="German">German</option>
+                    <option value="Greek">Greek</option>
+                    <option value="Gujarati">Gujarati</option>
+                    <option value="Haitian Creole">Haitian Creole</option>
+                    <option value="Hausa">Hausa</option>
+                    <option value="Hawaiian">Hawaiian</option>
+                    <option value="Hebrew">Hebrew</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Hmong">Hmong</option>
+                    <option value="Hungarian">Hungarian</option>
+                    <option value="Icelandic">Icelandic</option>
+                    <option value="Igbo">Igbo</option>
+                    <option value="Indonesian">Indonesian</option>
+                    <option value="Irish">Irish</option>
+                    <option value="Italian">Italian</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Javanese">Javanese</option>
+                    <option value="Kannada">Kannada</option>
+                    <option value="Kazakh">Kazakh</option>
+                    <option value="Khmer">Khmer</option>
+                    <option value="Kinyarwanda">Kinyarwanda</option>
+                    <option value="Korean">Korean</option>
+                    <option value="Kurdish">Kurdish</option>
+                    <option value="Kyrgyz">Kyrgyz</option>
+                    <option value="Lao">Lao</option>
+                    <option value="Latin">Latin</option>
+                    <option value="Latvian">Latvian</option>
+                    <option value="Lithuanian">Lithuanian</option>
+                    <option value="Luxembourgish">Luxembourgish</option>
+                    <option value="Macedonian">Macedonian</option>
+                    <option value="Malagasy">Malagasy</option>
+                    <option value="Malay">Malay</option>
+                    <option value="Malayalam">Malayalam</option>
+                    <option value="Maltese">Maltese</option>
+                    <option value="Maori">Maori</option>
+                    <option value="Marathi">Marathi</option>
+                    <option value="Mongolian">Mongolian</option>
+                    <option value="Myanmar (Burmese)">Myanmar (Burmese)</option>
+                    <option value="Nepali">Nepali</option>
+                    <option value="Norwegian">Norwegian</option>
+                    <option value="Odia (Oriya)">Odia (Oriya)</option>
+                    <option value="Pashto">Pashto</option>
+                    <option value="Persian">Persian</option>
+                    <option value="Polish">Polish</option>
+                    <option value="Portuguese">Portuguese</option>
+                    <option value="Punjabi">Punjabi</option>
+                    <option value="Romanian">Romanian</option>
+                    <option value="Russian">Russian</option>
+                    <option value="Samoan">Samoan</option>
+                    <option value="Scots Gaelic">Scots Gaelic</option>
+                    <option value="Serbian">Serbian</option>
+                    <option value="Sesotho">Sesotho</option>
+                    <option value="Shona">Shona</option>
+                    <option value="Sindhi">Sindhi</option>
+                    <option value="Sinhala">Sinhala</option>
+                    <option value="Slovak">Slovak</option>
+                    <option value="Slovenian">Slovenian</option>
+                    <option value="Somali">Somali</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="Sundanese">Sundanese</option>
+                    <option value="Swahili">Swahili</option>
+                    <option value="Swedish">Swedish</option>
+                    <option value="Tajik">Tajik</option>
+                    <option value="Tamil">Tamil</option>
+                    <option value="Tatar">Tatar</option>
+                    <option value="Telugu">Telugu</option>
+                    <option value="Thai">Thai</option>
+                    <option value="Turkish">Turkish</option>
+                    <option value="Turkmen">Turkmen</option>
+                    <option value="Ukrainian">Ukrainian</option>
+                    <option value="Urdu">Urdu</option>
+                    <option value="Uyghur">Uyghur</option>
+                    <option value="Uzbek">Uzbek</option>
+                    <option value="Vietnamese">Vietnamese</option>
+                    <option value="Welsh">Welsh</option>
+                    <option value="Xhosa">Xhosa</option>
+                    <option value="Yiddish">Yiddish</option>
+                    <option value="Yoruba">Yoruba</option>
+                    <option value="Zulu">Zulu</option>
+                    <option value="other">Other (specify below)</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="customLanguageGroup" style="display: none;">
+                <label for="customLanguage">Enter Custom Language:</label>
+                <input type="text" id="customLanguage" name="customLanguage" placeholder="e.g., Swahili, Tagalog, etc.">
+            </div>
+            
+            <button type="submit">Translate Audio</button>
+        </form>
+        
+        <div class="loading" id="loading">
+            <p>Processing your audio file... Please wait.</p>
+        </div>
+        
+        <div class="result" id="result">
+            <h3>Translation Results:</h3>
+            <div id="translationContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Show/hide custom language input based on selection
+        document.getElementById('language').addEventListener('change', function() {
+            const customLanguageGroup = document.getElementById('customLanguageGroup');
+            const customLanguageInput = document.getElementById('customLanguage');
+            
+            if (this.value === 'other') {
+                customLanguageGroup.style.display = 'block';
+                customLanguageInput.required = true;
+            } else {
+                customLanguageGroup.style.display = 'none';
+                customLanguageInput.required = false;
+                customLanguageInput.value = '';
+            }
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const languageSelect = document.getElementById('language');
+            const customLanguage = document.getElementById('customLanguage');
+            
+            // Use custom language if "other" is selected
+            let targetLanguage = languageSelect.value;
+            if (targetLanguage === 'other') {
+                targetLanguage = customLanguage.value.trim();
+                if (!targetLanguage) {
+                    alert('Please enter a custom language');
+                    return;
+                }
+                // Update formData with the custom language
+                formData.set('language', targetLanguage);
+            }
+            
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            
+            try {
+                const response = await fetch('/', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('translationContent').innerHTML = `
+                        <p><strong>Original Text (English):</strong><br>${data.original_text}</p>
+                        <p><strong>Translated Text (${data.target_language}):</strong><br>${data.translated_text}</p>
+                    `;
+                    result.style.display = 'block';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
