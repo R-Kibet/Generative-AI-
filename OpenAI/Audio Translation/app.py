@@ -44,7 +44,7 @@ def main():
                         file = audio
                     )
                     
-                    original_text = translation.text
+                    original_text = translate.text
                     
                     # If target language is not English, translate the text
                     if lang.lower() != 'english':
