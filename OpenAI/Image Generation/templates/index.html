@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RED-I Image Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e44211 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3b081c 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        textarea, select, input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus, select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.3);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            padding: 40px;
+            background: #f8f9fa;
+            display: none;
+        }
+
+        .results h2 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .image-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .image-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .image-info {
+            padding: 20px;
+        }
+
+        .image-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .image-info p {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .download-btn {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .download-btn:hover {
+            background: #218838;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                min-width: auto;
+            }
+            
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 RED-I Image Generator</h1>
+            <p>Visualize and Create stunning images with the power of AI</p>
+        </div>
+
+        <div class="form-container">
+            <form id="imageForm">
+                <div class="form-group">
+                    <label for="prompt">✨ Describe your image:</label>
+                    <textarea 
+                        id="prompt" 
+                        name="prompt" 
+                        placeholder="e.g., A majestic mountain landscape at sunset with purple clouds, digital art style, highly detailed, 4K resolution"
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="options-grid">
+                    <div class="form-group">
+                        <label for="size">📐 Image Size:</label>
+                        <select id="size" name="size">
+                            <option value="1024x1024">Square (1024x1024)</option>
+                            <option value="1024x1792">Portrait (1024x1792)</option>
+                            <option value="1792x1024">Landscape (1792x1024)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quality">🎯 Quality:</label>
+                        <select id="quality" name="quality">
+                            <option value="standard">Standard</option>
+                            <option value="hd">HD (Higher Cost)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="style">🎨 Style:</label>
+                        <select id="style" name="style">
+                            <option value="vivid">Vivid (More Creative)</option>
+                            <option value="natural">Natural (More Realistic)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="count">🔢 Number of Images:</label>
+                        <select id="count" name="count">
+                            <option value="1">1 Image</option>
+                            <option value="2">2 Images</option>
+                            <option value="3">3 Images</option>
+                            <option value="4">4 Images</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-primary">
+                        🚀 Generate Single Image
+                    </button>
+                    <button type="button" id="generateMultiple" class="btn-secondary">
+                        ✨ Generate Multiple Images
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <h3>Creating your masterpiece...</h3>
+            <p>This may take 10-30 seconds depending on complexity</p>
+        </div>
+
+        <div class="results" id="results">
+            <h2>🖼️ Generated Images</h2>
+            <div id="imageGrid" class="image-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        let isGenerating = false;
+
+        document.getElementById('imageForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (isGenerating) return;
+            
+            await generateImages(false);
+        });
+
+        document.getElementById('generateMultiple').addEventListener('click', async function() {
+            if (isGenerating) return;
+            
+            await generateImages(true);
+        });
+
+        async function generateImages(multiple = false) {
+            isGenerating = true;
+            
+            const formData = new FormData(document.getElementById('imageForm'));
+            const prompt = formData.get('prompt').trim();
+            
+            if (!prompt) {
+                alert('Please enter a prompt for your image');
+                isGenerating = false;
+                return;
+            }
+
+            const data = {
+                prompt: prompt,
+                size: formData.get('size'),
+                quality: formData.get('quality'),
+                style: formData.get('style'),
+                count: multiple ? parseInt(formData.get('count')) : 1
+            };
+
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            const imageGrid = document.getElementById('imageGrid');
+            
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            imageGrid.innerHTML = '';
+
+            try {
+                const endpoint = multiple ? '/generate_multiple' : '/generate';
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    displayResults(result, multiple);
+                } else {
+                    showError(result.error || 'Failed to generate image');
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+                isGenerating = false;
+            }
+        }
+
+        function displayResults(result, multiple) {
+            const imageGrid = document.getElementById('imageGrid');
+            const results = document.getElementById('results');
+            
+            if (multiple && result.images) {
+                result.images.forEach((image, index) => {
+                    const imageItem = createImageItem(image, result.prompt, index + 1);
+                    imageGrid.appendChild(imageItem);
+                });
+            } else {
+                const imageItem = createImageItem(result, result.prompt, 1);
+                imageGrid.appendChild(imageItem);
+            }
+            
+            results.style.display = 'block';
+        }
+
+        function createImageItem(imageData, originalPrompt, index) {
+            const div = document.createElement('div');
+            div.className = 'image-item';
+            
+            const revisedPrompt = imageData.revised_prompt || originalPrompt;
+            
+            div.innerHTML = `
+                <img src="${imageData.image_url}" alt="Generated Image ${index}" loading="lazy">
+                <div class="image-info">
+                    <h3>Image ${index}</h3>
+                    <p><strong>Original Prompt:</strong> ${originalPrompt}</p>
+                    ${revisedPrompt !== originalPrompt ? `<p><strong>AI Revised:</strong> ${revisedPrompt}</p>` : ''}
+                    <button class="download-btn" onclick="downloadImage('${imageData.image_url}', 'generated_image_${index}.png')">
+                        📥 Download Image
+                    </button>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        function showError(message) {
+            const results = document.getElementById('results');
+            const imageGrid = document.getElementById('imageGrid');
+            
+            imageGrid.innerHTML = `
+                <div class="error">
+                    <h3>❌ Error</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+            
+            results.style.display = 'block';
+        }
+
+        function downloadImage(url, filename) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Add some example prompts for inspiration
+        const examplePrompts = [
+            "A serene Japanese garden with cherry blossoms, koi pond, and traditional architecture, soft lighting, watercolor style",
+            "Futuristic cityscape at night with neon lights, flying cars, and holographic advertisements, cyberpunk aesthetic",
+            "A magical forest with glowing mushrooms, fairy lights, and mystical creatures, fantasy art style",
+            "Portrait of a wise old wizard with a long beard, wearing robes, holding a glowing staff, digital painting",
+            "Abstract geometric patterns in vibrant colors, modern art style, high contrast and sharp lines"
+        ];
+
+        // Add example prompt functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const promptTextarea = document.getElementById('prompt');
+            
+            promptTextarea.addEventListener('focus', function() {
+                if (!this.value) {
+                    const randomPrompt = examplePrompts[Math.floor(Math.random() * examplePrompts.length)];
+                    this.placeholder = `Example: ${randomPrompt}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
