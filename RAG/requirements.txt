@@ -8,3 +8,4 @@ unstructured
 python-dotenv
 streamlit
 sentence_transformers
+langchain-google-genai
